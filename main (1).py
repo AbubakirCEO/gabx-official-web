@@ -9,15 +9,11 @@ from datetime import datetime
 
 # --- 1. ASOSCHI VA TIZIM PROTOKOLLARI ---
 class FounderProtocol:
-    # To'liq ism-sharifingiz tizim yadrosiga muhrlandi
     FULL_NAME = "Abubakir Abdug‘aniyev Juraboyev Qobiljon o'g'li"
     BIRTHDAY = "20-September"
     VERSION = "GAB-X SOVEREIGN V21.WEB"
-    # Bu kalitni faqat Biz (Sen va Men) bilamiz
     SECRET_KEY = os.getenv("GABX_SECRET", "GABX_TITAN_ULTRA_MASTER_2026")
     DB_NAME = "gabx_enterprise_core.db"
-    
-    # QONUN: Yosh chegarasi butunlay olib tashlangan
     AGE_RESTRICTED = False
 
 # --- 2. ASYNCHRONOUS DATA ARCHITECTURE ---
@@ -27,11 +23,9 @@ class GabXEngine:
 
     def _initialize_vault(self):
         with sqlite3.connect(FounderProtocol.DB_NAME) as conn:
-            # Foydalanuvchilar bazasi
             conn.execute('''CREATE TABLE IF NOT EXISTS users (
                 id TEXT PRIMARY KEY, username TEXT UNIQUE, 
                 password TEXT, role TEXT, created_at TIMESTAMP)''')
-            # Tranzaksiyalar va ma'lumotlar
             conn.execute('''CREATE TABLE IF NOT EXISTS system_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, action TEXT)''')
 
@@ -54,19 +48,12 @@ class GabXWebApp:
         self._configure_web_environment()
 
     def _configure_web_environment(self):
-        # Google Indexing va SEO uchun Meta Ma'lumotlar
         self.page.title = f"GAB-X | Founder: {FounderProtocol.FULL_NAME}"
-        self.page.meta_data = {
-            "description": f"{FounderProtocol.FULL_NAME} tomonidan yaratilgan global platforma",
-            "keywords": "GAB-X, Abubakir, Abduganiyev, Sovereign System, Web App",
-            "author": FounderProtocol.FULL_NAME
-        }
         self.page.theme_mode = ft.ThemeMode.DARK
-        self.page.bgcolor = "#050505" # Haqiqiy Premium Qora
+        self.page.bgcolor = "#050505"
         self.page.padding = 0
         self.show_opening_ceremony()
 
-    # --- 1-BO'LIM: OCHILISH MAROSIMI (Founder Reveal) ---
     def show_opening_ceremony(self):
         self.page.clean()
         is_bday = (datetime.now().strftime("%d-%B") == FounderProtocol.BIRTHDAY)
@@ -75,16 +62,12 @@ class GabXWebApp:
             expand=True,
             alignment=ft.alignment.center,
             content=ft.Column([
+                # TUZATILGAN QATOR: SHIELD_SHARP o'rniga SECURITY ishlatildi
+                ft.Icon(name=ft.icons.SECURITY, color="gold", size=60),
                 ft.Text("INITIALIZING GAB-X CORE", size=12, color="gold", weight="bold", opacity=0.7),
                 ft.Text(FounderProtocol.FULL_NAME, size=32, weight="bold", text_align="center"),
                 ft.Text("SYSTEM OWNER / FOUNDER", color="white54", size=14, italic=True),
                 ft.Divider(height=40, color="transparent"),
-                ft.Container(
-                    content=ft.Text("🎉 FOUNDER'S BIRTHDAY MODE ACTIVE 🎉" if is_bday else f"EVENT: {FounderProtocol.BIRTHDAY}"),
-                    padding=15, border_radius=10, bgcolor="white10" if not is_bday else "green900"
-                ),
-                ft.Text("NO AGE RESTRICTION | OPEN ACCESS", color="green", size=12),
-                ft.Container(height=40),
                 ft.ElevatedButton(
                     "TIZIMNI ISHGA TUSHIRISH", 
                     on_click=lambda _: self.show_auth_portal(),
@@ -94,11 +77,10 @@ class GabXWebApp:
         )
         self.page.add(ceremony)
 
-    # --- 2-BO'LIM: XAVFSIZ KIRISH (Multi-User Sovereign) ---
     def show_auth_portal(self):
         self.page.clean()
         u_in = ft.TextField(label="Username", width=350, border_color="gold")
-        p_in = ft.TextField(label="Password (Sizniki faqat sizga tegishli)", password=True, width=350)
+        p_in = ft.TextField(label="Password", password=True, width=350)
         msg = ft.Text()
 
         async def auth_action(e):
@@ -132,7 +114,6 @@ class GabXWebApp:
             )
         )
 
-    # --- 3-BO'LIM: ASOSIY BOSHQARUV PANELI (The Sovereign Dashboard) ---
     def show_main_dashboard(self):
         self.page.clean()
         self.page.add(
@@ -154,27 +135,18 @@ class GabXWebApp:
                             ft.Text(f"{FounderProtocol.FULL_NAME[:15]}...", size=18, color="gold", weight="bold")
                         ])))
                     ]),
-                    ft.Text("GLOBAL NETWORK (Hamma uchun ochiq)", size=18, weight="bold"),
+                    ft.Text("GLOBAL NETWORK", size=18, weight="bold"),
                     ft.ListView(expand=True, controls=[
                         ft.ListTile(
                             leading=ft.Icon(ft.icons.PUBLIC),
                             title=ft.Text(f"Sovereign Node #{i}"),
-                            subtitle=ft.Text("Ushbu profil egasi o'z parolini o'zi boshqaradi.")
-                        ) for i in range(5)
+                            subtitle=ft.Text("Tizim muvaffaqiyatli ishga tushdi.")
+                        ) for i in range(3)
                     ])
                 ])
             )
         )
 
-# --- 4. PRODUCTION DEPLOYMENT ENGINE ---
 if __name__ == "__main__":
-    # Server (Render/Railway) beradigan portni aniqlash
     port = int(os.getenv("PORT", 8080))
-    
-    # MUHIM: Bu qism Safari va Chrome'da ko'rinadigan qiladi
-    ft.app(
-        target=GabXWebApp,
-        view=ft.AppView.WEB_BROWSER, # Web rejimini yoqish
-        port=port,                   # Dinamik port
-        host="0.0.0.0"               # Tashqi dunyo uchun eshikni ochish
-    )
+    ft.app(target=GabXWebApp, view=ft.AppView.WEB_BROWSER, port=port, host="0.0.0.0")
