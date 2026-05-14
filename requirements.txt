@@ -1,4 +1,3 @@
 flet
 bcrypt
-PyJWT
-
+pysqlite3-binary
